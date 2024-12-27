@@ -128,16 +128,18 @@ void *SKIP_LIST_FUNC(get_next)(SKIP_LIST_NAME *list, SKIP_LIST_KEY_TYPE key) {
     if (list->head->next == NULL) return NULL;
     SKIP_LIST_NODE *current = list->head;
     size_t current_level = list->max_level;
-    while (current_level > 1) {
+    while (current_level >= 1) {
         while (current->next != NULL && (
                     (SKIP_LIST_KEY_LESS_THAN(current->next->key, key))
                  || (SKIP_LIST_KEY_EQUALS(current->next->key, key)))) {
             current = current->next;
         }
-        current = current->down;
+        if (current_level > 1) {
+            current = current->down;
+        }
         current_level--;
     }
-    if (current_level == 1 && current != NULL && current->next != NULL) {
+    if (current_level == 0 && current != NULL && current->next != NULL) {
         return (void *)current->next->down->next;
     }
     return NULL;
