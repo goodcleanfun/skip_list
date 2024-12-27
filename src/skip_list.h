@@ -79,7 +79,7 @@ SKIP_LIST_NAME *SKIP_LIST_FUNC(new)(void) {
     return list;
 }
 
-void *SKIP_LIST_FUNC(search)(SKIP_LIST_NAME *list, SKIP_LIST_KEY_TYPE key) {
+void *SKIP_LIST_FUNC(get)(SKIP_LIST_NAME *list, SKIP_LIST_KEY_TYPE key) {
     if (list == NULL || list->head == NULL) return NULL;
     bool beyond_placeholder = false;
     if (list->head->next == NULL) return NULL;
@@ -103,7 +103,7 @@ void *SKIP_LIST_FUNC(search)(SKIP_LIST_NAME *list, SKIP_LIST_KEY_TYPE key) {
 }
 
 
-void *SKIP_LIST_FUNC(search_before)(SKIP_LIST_NAME *list, SKIP_LIST_KEY_TYPE key) {
+void *SKIP_LIST_FUNC(get_prev)(SKIP_LIST_NAME *list, SKIP_LIST_KEY_TYPE key) {
     if (list == NULL || list->head == NULL) return NULL;
     if (list->head->next == NULL) return NULL;
     SKIP_LIST_NODE *current = list->head;
@@ -122,7 +122,7 @@ void *SKIP_LIST_FUNC(search_before)(SKIP_LIST_NAME *list, SKIP_LIST_KEY_TYPE key
     return NULL;
 }
 
-void *SKIP_LIST_FUNC(search_after)(SKIP_LIST_NAME *list, SKIP_LIST_KEY_TYPE key) {
+void *SKIP_LIST_FUNC(get_next)(SKIP_LIST_NAME *list, SKIP_LIST_KEY_TYPE key) {
     if (list == NULL || list->head == NULL) return NULL;
     bool beyond_placeholder = false;
     if (list->head->next == NULL) return NULL;
