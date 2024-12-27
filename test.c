@@ -52,6 +52,9 @@ TEST test_skip_list(void) {
     e = skip_list_uint32_search_before(list, 11);
     ASSERT_STR_EQ("e", e);
 
+    e = skip_list_uint32_search_before(list, 10);
+    ASSERT_STR_EQ("e", e);
+
     a = skip_list_uint32_delete(list, 1);
     ASSERT_STR_EQ(a, "a");
   
@@ -81,6 +84,9 @@ TEST test_skip_list(void) {
     ASSERT_STR_EQ(d, "d");
 
     f = skip_list_uint32_search_after(list, 7);
+    ASSERT_STR_EQ("f", f);
+
+    f = skip_list_uint32_search_after(list, 8);
     ASSERT_STR_EQ("f", f);
 
     char *first = skip_list_uint32_search_before(list, 7);
