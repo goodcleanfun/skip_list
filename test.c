@@ -26,19 +26,31 @@ TEST test_skip_list(void) {
     skip_list_uint32_insert(list, 11, "f");
 
     char *a = skip_list_uint32_search(list, 1);
-    ASSERT_STR_EQ(a, "a");
+    ASSERT_STR_EQ("a", a);
 
     char *b = skip_list_uint32_search(list, 3);
-    ASSERT_STR_EQ(b, "b");
+    ASSERT_STR_EQ("b", b);
 
     char *c = skip_list_uint32_search(list, 5);
-    ASSERT_STR_EQ(c, "c");
+    ASSERT_STR_EQ("c", c);
 
     char *d = skip_list_uint32_search(list, 7);
-    ASSERT_STR_EQ(d, "d");
+    ASSERT_STR_EQ("d", d);
 
     char *e = skip_list_uint32_search(list, 9);
-    ASSERT_STR_EQ(e, "e");
+    ASSERT_STR_EQ("e", e);
+
+    e = skip_list_uint32_search_after(list, 7);
+    ASSERT_STR_EQ("e", e);
+
+    char *f = skip_list_uint32_search(list, 11);
+    ASSERT_STR_EQ("f", f);
+
+    char *last = skip_list_uint32_search_after(list, 11);
+    ASSERT(last == NULL);
+
+    e = skip_list_uint32_search_before(list, 11);
+    ASSERT_STR_EQ("e", e);
 
     a = skip_list_uint32_delete(list, 1);
     ASSERT_STR_EQ(a, "a");
@@ -66,6 +78,13 @@ TEST test_skip_list(void) {
 
     skip_list_uint32_insert(list, 7, "d");
     d = skip_list_uint32_search(list, 7);
+    ASSERT_STR_EQ(d, "d");
+
+    f = skip_list_uint32_search_after(list, 7);
+    ASSERT_STR_EQ("f", f);
+
+    char *first = skip_list_uint32_search_before(list, 7);
+    ASSERT(first == NULL);
 
     skip_list_uint32_destroy(list);
     PASS();

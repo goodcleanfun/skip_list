@@ -102,6 +102,47 @@ void *SKIP_LIST_FUNC(search)(SKIP_LIST_NAME *list, SKIP_LIST_KEY_TYPE key) {
     return NULL;
 }
 
+
+void *SKIP_LIST_FUNC(search_before)(SKIP_LIST_NAME *list, SKIP_LIST_KEY_TYPE key) {
+    if (list == NULL || list->head == NULL) return NULL;
+    if (list->head->next == NULL) return NULL;
+    SKIP_LIST_NODE *current = list->head;
+    SKIP_LIST_NODE *prev = NULL;
+    size_t current_level = list->max_level;
+    while (current_level >= 1) {
+        while (current->next != NULL && (SKIP_LIST_KEY_LESS_THAN(current->next->key, key))) {
+            current = current->next;
+        }
+        current = current->down;
+        current_level--;
+    }
+    if (current_level == 0 && current->next != NULL) {
+        return (void *)current->next;
+    }
+    return NULL;
+}
+
+void *SKIP_LIST_FUNC(search_after)(SKIP_LIST_NAME *list, SKIP_LIST_KEY_TYPE key) {
+    if (list == NULL || list->head == NULL) return NULL;
+    bool beyond_placeholder = false;
+    if (list->head->next == NULL) return NULL;
+    SKIP_LIST_NODE *current = list->head;
+    size_t current_level = list->max_level;
+    while (current_level > 1) {
+        while (current->next != NULL && (
+                    (SKIP_LIST_KEY_LESS_THAN(current->next->key, key))
+                 || (SKIP_LIST_KEY_EQUALS(current->next->key, key)))) {
+            current = current->next;
+        }
+        current = current->down;
+        current_level--;
+    }
+    if (current_level == 1 && current != NULL && current->next != NULL) {
+        return (void *)current->next->down->next;
+    }
+    return NULL;
+}
+
 bool SKIP_LIST_FUNC(insert)(SKIP_LIST_NAME *list, SKIP_LIST_KEY_TYPE key, SKIP_LIST_VALUE_TYPE value) {
     SKIP_LIST_NODE *tmp_node = NULL;
     SKIP_LIST_NODE *new_node = SKIP_LIST_NODE_MEMORY_POOL_FUNC(get)(list->pool);
@@ -124,11 +165,6 @@ bool SKIP_LIST_FUNC(insert)(SKIP_LIST_NAME *list, SKIP_LIST_KEY_TYPE key, SKIP_L
 
     SKIP_LIST_NODE *head = list->head;
     tmp_node = head;
-    size_t max_level = 0;
-    while (tmp_node->down != NULL) {
-        tmp_node = tmp_node->down;
-        max_level++;
-    }
     while (list->max_level < new_node_level) {
         tmp_node = SKIP_LIST_NODE_MEMORY_POOL_FUNC(get)(list->pool);
         if (tmp_node == NULL) {
@@ -136,6 +172,7 @@ bool SKIP_LIST_FUNC(insert)(SKIP_LIST_NAME *list, SKIP_LIST_KEY_TYPE key, SKIP_L
         }
         tmp_node->down = head->down;
         tmp_node->next = head->next;
+        tmp_node->key = head->key;
         head->down = tmp_node;
         head->next = NULL;
         list->max_level++;
