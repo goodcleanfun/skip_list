@@ -6,7 +6,9 @@
     "keywords": [],
     "license": "MIT",
     "dependencies": {
-      "goodcleanfun/memory_pool": "*"
+      "goodcleanfun/bit_utils": "*",
+      "goodcleanfun/memory_pool": "*",
+      "goodcleanfun/random": "*"
     },
     "development": {
       "silentbicycle/greatest": "*"

@@ -6,6 +6,32 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "bit_utils/bit_utils.h"
+
+#if ((UINTPTR_MAX == 0xFFFFFFFFFFFFFFFFu))
+#define SKIP_LIST_MAX_LEVEL 64
+// (1 << 64) - 1
+#define SKIP_LIST_MAX_LEVEL_MASK UINT64_MAX
+#include "random/rand64.h"
+#elif ((UINTPTR_MAX == 0xFFFFFFFF))
+#define SKIP_LIST_MAX_LEVEL 32
+// (1 << 32) - 1
+#define SKIP_LIST_MAX_LEVEL_MASK UINT32_MAX
+#include "random/rand32.h"
+#else
+#error "Unknown pointer size"
+#endif
+
+#if SKIP_LIST_MAX_LEVEL == 64
+static inline size_t skip_list_random_level(pcg64_random_t *rng) {
+    return (size_t)(1 + clz(rand64_gen_random(rng) & SKIP_LIST_MAX_LEVEL_MASK));
+}
+#elif SKIP_LIST_MAX_LEVEL == 32
+static inline size_t skip_list_random_level(pcg32_random_t *rng) {
+    return (size_t)(1 + clz(rand32_gen_random(rng) & SKIP_LIST_MAX_LEVEL_MASK));
+}
+#endif
+
 #endif // SKIP_LIST_H
 
 #ifndef SKIP_LIST_NAME
@@ -54,6 +80,11 @@ typedef struct SKIP_LIST_TYPED(node) {
 typedef struct {
     SKIP_LIST_NODE *head;
     size_t max_level;
+    #if SKIP_LIST_MAX_LEVEL == 64
+    pcg64_random_t rng;
+    #elif SKIP_LIST_MAX_LEVEL == 32
+    pcg32_random_t rng;
+    #endif
     SKIP_LIST_NODE_MEMORY_POOL_NAME *pool;
 } SKIP_LIST_NAME;
 
@@ -65,6 +96,13 @@ SKIP_LIST_NAME *SKIP_LIST_FUNC(new)(void) {
         free(list);
         return NULL;
     }
+    #if SKIP_LIST_MAX_LEVEL == 64
+    list->rng = rand64_gen_init();
+    rand64_gen_seed(&list->rng, 42, 1);
+    #elif SKIP_LIST_MAX_LEVEL == 32
+    list->rng = rand32_gen_init();
+    rand32_gen_seed(&list->rng, 42, 1);
+    #endif
     SKIP_LIST_NODE *head = SKIP_LIST_NODE_MEMORY_POOL_FUNC(get)(list->pool);
     if (head == NULL) {
         SKIP_LIST_NODE_MEMORY_POOL_FUNC(destroy)(list->pool);
@@ -152,8 +190,8 @@ bool SKIP_LIST_FUNC(insert)(SKIP_LIST_NAME *list, SKIP_LIST_KEY_TYPE key, SKIP_L
     new_node->key = key;
     new_node->down = NULL;
     new_node->next = (SKIP_LIST_NODE *)value;
-    size_t new_node_level = 0;
-    do {
+    size_t new_node_level = skip_list_random_level(&list->rng);
+    for (size_t i = 0; i < new_node_level; i++) {
         tmp_node = SKIP_LIST_NODE_MEMORY_POOL_FUNC(get)(list->pool);
         if (tmp_node == NULL) {
             return false;
@@ -162,8 +200,7 @@ bool SKIP_LIST_FUNC(insert)(SKIP_LIST_NAME *list, SKIP_LIST_KEY_TYPE key, SKIP_L
         tmp_node->down = new_node;
         tmp_node->next = NULL;
         new_node = tmp_node;
-        new_node_level++;
-    } while ((rand() % 2) == 0);
+    }
 
     SKIP_LIST_NODE *head = list->head;
     tmp_node = head;
