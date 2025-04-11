@@ -247,7 +247,7 @@ void *SKIP_LIST_FUNC(delete)(SKIP_LIST_NAME *list, SKIP_LIST_KEY_TYPE key) {
             SKIP_LIST_KEY_LESS_THAN(current_node->next->key, key))) {
             current_node = current_node->next;
         }
-        if (SKIP_LIST_KEY_EQUALS(current_node->next->key, key)) {
+        if (current_node->next != NULL && SKIP_LIST_KEY_EQUALS(current_node->next->key, key)) {
             tmp_node = current_node->next;
             // unlink node
             current_node->next = tmp_node->next;
