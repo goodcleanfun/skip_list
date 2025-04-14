@@ -80,13 +80,13 @@ jobs:
           mkdir -p deps/memory_pool
           curl -L https://raw.githubusercontent.com/goodcleanfun/memory_pool/refs/heads/main/src/memory_pool.h -o deps/memory_pool/memory_pool.h
           mkdir -p deps/bit_utils
+          curl -L https://raw.githubusercontent.com/goodcleanfun/bit_utils/refs/heads/main/src/bit_utils.h -o deps/bit_utils/bit_utils.h
+          mkdir -p deps/random
           curl -L https://raw.githubusercontent.com/goodcleanfun/random/refs/heads/main/src/random/os.h -o deps/random/os.h
           curl -L https://raw.githubusercontent.com/goodcleanfun/random/refs/heads/main/src/random/pcg32.h -o deps/random/pcg32.h
           curl -L https://raw.githubusercontent.com/goodcleanfun/random/refs/heads/main/src/random/pcg32.h -o deps/random/pcg32.h
           curl -L https://raw.githubusercontent.com/goodcleanfun/random/refs/heads/main/src/random/rand32.h -o deps/random/rand32.h
           curl -L https://raw.githubusercontent.com/goodcleanfun/random/refs/heads/main/src/random/rand64.h -o deps/random/rand64.h
-          curl -L https://raw.githubusercontent.com/goodcleanfun/bit_utils/refs/heads/main/src/bit_utils.h -o deps/bit_utils/bit_utils.h
-          mkdir -p deps/random
           mkdir -p deps/spinlock
           curl -L https://raw.githubusercontent.com/goodcleanfun/spinlock/refs/heads/main/src/spinlock.h -o deps/spinlock/spinlock.h
       - name: Build and Test with MinGW
