@@ -84,7 +84,7 @@ jobs:
           mkdir -p deps/random
           curl -L https://raw.githubusercontent.com/goodcleanfun/random/refs/heads/main/src/random/os.h -o deps/random/os.h
           curl -L https://raw.githubusercontent.com/goodcleanfun/random/refs/heads/main/src/random/pcg32.h -o deps/random/pcg32.h
-          curl -L https://raw.githubusercontent.com/goodcleanfun/random/refs/heads/main/src/random/pcg32.h -o deps/random/pcg32.h
+          curl -L https://raw.githubusercontent.com/goodcleanfun/random/refs/heads/main/src/random/pcg64.h -o deps/random/pcg64.h
           curl -L https://raw.githubusercontent.com/goodcleanfun/random/refs/heads/main/src/random/rand32.h -o deps/random/rand32.h
           curl -L https://raw.githubusercontent.com/goodcleanfun/random/refs/heads/main/src/random/rand64.h -o deps/random/rand64.h
           mkdir -p deps/spinlock
