@@ -11,7 +11,8 @@
       "goodcleanfun/random": "*"
     },
     "development": {
-      "silentbicycle/greatest": "*"
+      "silentbicycle/greatest": "*",
+      "goodcleanfun/threading": "*"
     },
     "src": [
       "src/skip_list.h"
