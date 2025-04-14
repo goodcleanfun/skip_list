@@ -2,7 +2,7 @@ install:
 	clib install --dev
 
 test:
-	@$(CC) test.c -std=c99 -I src -I deps -o $@
+	@$(CC) $(CFLAGS) test.c -I src -I deps $(LDFLAGS) -o $@
 	@./$@
 
 .PHONY: test
