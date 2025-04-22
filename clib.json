@@ -1,6 +1,6 @@
 {
     "name": "skip_list",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "repo": "goodcleanfun/skip_list",
     "description": "Skip lists are linked lists with express lines, randomized but with an expected O(log n) for search/insert/delete",
     "keywords": [],
