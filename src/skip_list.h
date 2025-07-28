@@ -12,23 +12,23 @@
 #define SKIP_LIST_MAX_LEVEL 64
 // (1 << 64) - 1
 #define SKIP_LIST_MAX_LEVEL_MASK UINT64_MAX
-#include "random/rand64.h"
+#include "random/rand_u64.h"
 #elif ((UINTPTR_MAX == 0xFFFFFFFF))
 #define SKIP_LIST_MAX_LEVEL 32
 // (1 << 32) - 1
 #define SKIP_LIST_MAX_LEVEL_MASK UINT32_MAX
-#include "random/rand32.h"
+#include "random/rand_u32.h"
 #else
 #error "Unknown pointer size"
 #endif
 
 #if SKIP_LIST_MAX_LEVEL == 64
-static inline size_t skip_list_random_level(pcg64_random_t *rng) {
-    return (size_t)(1 + clz(rand64_gen_random(rng) & SKIP_LIST_MAX_LEVEL_MASK));
+static inline size_t skip_list_random_level(rand_u64_gen_t *rng) {
+    return (size_t)(1 + clz(rand_u64(rng) & SKIP_LIST_MAX_LEVEL_MASK));
 }
 #elif SKIP_LIST_MAX_LEVEL == 32
-static inline size_t skip_list_random_level(pcg32_random_t *rng) {
-    return (size_t)(1 + clz(rand32_gen_random(rng) & SKIP_LIST_MAX_LEVEL_MASK));
+static inline size_t skip_list_random_level(rand_u32_gen_t *rng) {
+    return (size_t)(1 + clz(rand_u32(rng) & SKIP_LIST_MAX_LEVEL_MASK));
 }
 #endif
 
@@ -130,9 +130,9 @@ typedef struct {
     SKIP_LIST_NODE *head;
     size_t max_level;
     #if SKIP_LIST_MAX_LEVEL == 64
-    pcg64_random_t random;
+    rand_u64_gen_t random;
     #elif SKIP_LIST_MAX_LEVEL == 32
-    pcg32_random_t random;
+    rand_u32_gen_t random;
     #endif
     size_t size;
     #endif
@@ -179,11 +179,9 @@ SKIP_LIST_NAME *SKIP_LIST_FUNC(new_pool)(SKIP_LIST_NODE_MEMORY_POOL_NAME *pool) 
     head->down = NULL;
     list->head = head;
     #if SKIP_LIST_MAX_LEVEL == 64
-    list->random = rand64_gen_init();
-    rand64_gen_seed(&list->random, 123422334, 1);//_os(&list->random);
+    rand_u64_init(&list->random);
     #elif SKIP_LIST_MAX_LEVEL == 32
-    list->random = rand32_gen_init();
-    rand32_gen_seed_os(&list->random);
+    rand_u32_init(&list->random);
     #endif
     list->size = 0;
     list->max_level = 0;
@@ -193,25 +191,21 @@ SKIP_LIST_NAME *SKIP_LIST_FUNC(new_pool)(SKIP_LIST_NODE_MEMORY_POOL_NAME *pool) 
 
 #ifdef SKIP_LIST_THREAD_SAFE
 #if SKIP_LIST_MAX_LEVEL == 64
-static inline rand64_gen_t *SKIP_LIST_FUNC(get_thread_random)(SKIP_LIST_NAME *list) {
-    rand64_gen_t *rng = tss_get(list->random);
+static inline rand_u64_gen_t *SKIP_LIST_FUNC(get_thread_random)(SKIP_LIST_NAME *list) {
+    rand_u64_gen_t *rng = tss_get(list->random);
     if (rng == NULL) {
-        rng = malloc(sizeof(rand64_gen_t));
-        *rng = rand64_gen_init();
-        //rand64_gen_seed_os(rng);
-        rand64_gen_seed(rng, 123422334, 1);
+        rng = malloc(sizeof(rand_u64_gen_t));
+        rand_u64_init(rng);
         tss_set(list->random, rng);
     }
     return rng;
 }
 #elif SKIP_LIST_MAX_LEVEL == 32
-static inline rand32_gen_t *SKIP_LIST_FUNC(get_thread_random)(SKIP_LIST_NAME *list) {
-    rand32_gen_t *rng = tss_get(list->random);
+static inline rand_u32_gen_t *SKIP_LIST_FUNC(get_thread_random)(SKIP_LIST_NAME *list) {
+    rand_u32_gen_t *rng = tss_get(list->random);
     if (rng == NULL) {
-        rng = malloc(sizeof(rand32_gen_t));
-        *rng = rand32_gen_init();
-        //rand32_gen_seed_os(rng);
-        rand32_gen_seed(rng, 123422334, 1);
+        rng = malloc(sizeof(rand_u32_gen_t));
+        rand_u32_init(rng);
         tss_set(list->random, rng);
     }
     return rng;
